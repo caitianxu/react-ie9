@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="Access-Control-Allow-Origin" content="*">
+  <title>登录成功</title>
+</head>
+
+<body>
+  <script type="text/javascript">
+    function unParam(str, key) {
+      var param = {},
+        array = str.replace("?", "").replace("/", "").split('&');
+      for (var i = 0; i < array.length; i++) {
+        if (array[i].indexOf('=') != -1) {
+          var slef = array[i].split('=');
+          param[slef[0]] = slef[1];
+        }
+      }
+      return key ? param[key] : param;
+    }
+
+    function setCookie(cname, cvalue, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      var expires = "expires=" + d.toGMTString();
+      document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    function getCookie(cname) {
+      var name = cname + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+      }
+      return "";
+    }
+    var param = unParam(window.location.search);
+    if (window.opener && window.opener.loginSuccess) {
+      window.opener.loginSuccess(param.token);
+      window.close();
+    } else if (window.parent && window.parent.loginSuccess) {
+      window.parent.loginSuccess(param.token);
+    } else {
+      setCookie('token', param.token);
+      var loginFrom = getCookie('loginFrom');
+      var dfSearch = getCookie('dfSearch') || '';
+      if (loginFrom) {
+        window.location.href = window.location.protocol + "//" + window.location.host + '/index' + decodeURIComponent(dfSearch);
+      }
+    }
+  </script>
+</body>
+
+</html>
